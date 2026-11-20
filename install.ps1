@@ -21,11 +21,11 @@ if ($PSScriptRoot -and (Test-Path (Join-Path $PSScriptRoot "app.py"))) {
 }
 Set-Location $Dir
 
-# Find Python 3.9+. The Microsoft Store "python" stub does not count.
+# Find Python 3.10+. The Microsoft Store "python" stub does not count.
 # Returns the full path of a suitable python.exe, or $null.
 function Find-Python {
     $check = Join-Path $env:TEMP "pin-palette-pycheck.py"
-    Set-Content $check "import sys`nprint(sys.executable if sys.version_info >= (3, 9) else '')"
+    Set-Content $check "import sys`nprint(sys.executable if sys.version_info >= (3, 10) else '')"
     $found = $null
     foreach ($try in @({ py -3 $check }, { python $check }, { python3 $check })) {
         try {

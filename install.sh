@@ -16,15 +16,15 @@ else
 fi
 cd "$DIR"
 
-# Find Python 3.9 or newer.
+# Find Python 3.10 or newer.
 PY=""
 for c in python3 python; do
-  if command -v "$c" >/dev/null 2>&1 && "$c" -c 'import sys; sys.exit(sys.version_info < (3, 9))' 2>/dev/null; then
+  if command -v "$c" >/dev/null 2>&1 && "$c" -c 'import sys; sys.exit(sys.version_info < (3, 10))' 2>/dev/null; then
     PY="$c"; break
   fi
 done
 if [ -z "$PY" ]; then
-  echo "Python 3.9 or newer is required."
+  echo "Python 3.10 or newer is required."
   if [ "$(uname)" = "Darwin" ]; then echo "Install it from https://www.python.org/downloads/ or run: brew install python"
   else echo "Install it with your package manager, for example: sudo apt install python3 python3-venv"; fi
   exit 1

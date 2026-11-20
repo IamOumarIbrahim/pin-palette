@@ -1,10 +1,24 @@
 # Pin Palette
 
-Find Pinterest images that use the same colors as yours, in the same amounts.
+[![tests](https://github.com/IamOumarIbrahim/pin-palette/actions/workflows/tests.yml/badge.svg)](https://github.com/IamOumarIbrahim/pin-palette/actions/workflows/tests.yml)
+![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)
+![Windows | macOS | Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 
-![Pin Palette matching pins to a brown and black palette](docs/screenshot.png)
+**Find and download Pinterest images that match your color palette.** Drop in a photo, a moodboard or a whole folder. Pin Palette extracts its color palette, searches Pinterest, and shows only the pins with the same colors in the same proportions. Pick the ones you like and download them in full resolution.
 
-Give it one image or a folder. It reads the palette (which colors, and what share of the image each one covers), searches Pinterest, and shows the pins that match. A slider sets how strict the match is. Pick the ones you like and download them full size.
+Useful for moodboards, brand and interior color schemes, outfit inspiration, wallpaper hunting and aesthetic collections.
+
+![Pin Palette matching Pinterest pins to a white, silver and beige palette](docs/screenshot.png)
+
+## Features
+
+- **Palette extraction** from one image or a folder (up to 8 colors, with how much of the image each one covers)
+- **Editable palette**: drag to change color amounts, change or remove colors, add your own, or start from scratch with no image
+- **Match strictness slider**, plus fine-tune controls for color tolerance, amount tolerance and number of colors
+- **Live filtering**: results re-sort instantly as you move a slider or edit the palette
+- **Bulk download** of full-size originals
+- **One-line install** on Windows, macOS and Linux; runs locally in your browser, no account needed
+- Optional Pinterest login for more results
 
 ## Install
 
@@ -56,8 +70,8 @@ When you add several images, their palettes are merged into one target palette, 
 python -m unittest discover -s tests
 ```
 
-CI runs them on Windows, macOS and Linux with Python 3.9 and 3.13.
+CI runs them on Windows, macOS and Linux with Python 3.10 and 3.13.
 
 ## Requirements
 
-Python 3.9+, Pillow and NumPy. Runs locally at `http://127.0.0.1:8765`.
+Python 3.10+, Pillow and NumPy. Runs locally at `http://127.0.0.1:8765`.
