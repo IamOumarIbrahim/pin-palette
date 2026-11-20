@@ -2,6 +2,8 @@
 
 Find Pinterest images that use the same colors as yours, in the same amounts.
 
+![Pin Palette matching pins to a brown and black palette](docs/screenshot.png)
+
 Give it one image or a folder. It reads the palette (which colors, and what share of the image each one covers), searches Pinterest, and shows the pins that match. A slider sets how strict the match is. Pick the ones you like and download them full size.
 
 ## Install
