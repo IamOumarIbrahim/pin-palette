@@ -6,107 +6,165 @@
 <title>Pin Palette</title>
 <style>
 :root{--bg:#fafaf9;--card:#fff;--ink:#18181b;--muted:#636369;--line:#e7e5e4;--soft:#f2f1ef;--accent:#c2410c;--onAccent:#fff;
-  --r-lg:20px;--r-md:14px;--s1:8px;--s2:16px;--s3:24px;--s4:40px;--ease:cubic-bezier(.2,.8,.2,1)}
-@media (prefers-color-scheme:dark){:root{--bg:#0f0f10;--card:#18181b;--ink:#f4f4f5;--muted:#a8a8b0;--line:#2a2a2e;--soft:#202024;--accent:#fb8a4c;--onAccent:#1a0f08}}
+  --r-lg:20px;--r-md:14px;--r-sm:8px;--s1:8px;--s2:16px;--s3:24px;--s4:40px;--ease:cubic-bezier(.2,.8,.2,1)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f0f10;--card:#18181b;--ink:#f4f4f5;--muted:#a8a8b0;--line:#2a2a2e;--soft:#222226;--accent:#fb8a4c;--onAccent:#1a0f08}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
-button,input{font:inherit;color:inherit}
+button,input,select{font:inherit;color:inherit}
 button{cursor:pointer;border:0;background:none}
-.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+.wrap{max-width:1320px;margin:0 auto;padding:0 20px}
 header{display:flex;align-items:center;justify-content:space-between;height:64px}
-.logo{font-weight:650;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.logo{font-weight:650;display:flex;align-items:center;gap:10px}
 .dots{display:flex;gap:3px}.dots i{width:9px;height:9px;border-radius:50%}
-.ghost{padding:8px 12px;border-radius:999px;color:var(--muted)}
+.ghost{padding:9px 14px;min-height:40px;border-radius:999px;color:var(--muted);font-size:15px}
 .ghost:hover{background:var(--soft);color:var(--ink)}
-.btn{padding:10px 18px;border-radius:999px;background:var(--accent);color:var(--onAccent);font-weight:600;white-space:nowrap;transition:transform .15s var(--ease),opacity .15s}
+.btn{padding:13px 23px;border-radius:999px;background:var(--accent);color:var(--onAccent);font-weight:600;white-space:nowrap;transition:transform .15s var(--ease),opacity .15s}
 .btn:active{transform:scale(.97)}
-.btn.busy{opacity:.7;cursor:progress}
 .btn:disabled{opacity:.35;cursor:default}
 .btn.sec{background:var(--soft);color:var(--ink)}
 .field{width:100%;padding:11px 16px;border:1px solid var(--line);border-radius:999px;background:var(--card);outline:none}
-.field:focus{border-color:var(--muted)}
+.field:focus,.mini:focus{border-color:var(--muted)}
 .hidden{display:none!important}
+.ico{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.iconbtn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--muted);flex:none}
+.iconbtn:hover{background:var(--soft);color:var(--ink)}
+/* Big, easy-to-grab sliders: 29px tall hit area, 19px thumb. */
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:36px;margin:0;background:transparent;cursor:pointer;touch-action:none}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:999px;background:linear-gradient(var(--accent),var(--accent)) 0/var(--fill,50%) 100% no-repeat,var(--line)}
+input[type=range]::-moz-range-track{height:8px;border-radius:999px;background:var(--line)}
+input[type=range]::-moz-range-progress{height:8px;border-radius:999px;background:var(--accent)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-8px;border-radius:50%;background:#fff;border:3px solid var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .12s var(--ease)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
+input[type=range]:focus{outline:none}
+input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 30%,transparent)}
+input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 30%,transparent)}
 
 /* onboarding */
 #hero{min-height:calc(100vh - 64px);display:grid;place-items:center;padding-bottom:64px}
 .hero-in{width:100%;max-width:560px;text-align:center}
 .hero-in h1{font-size:34px;line-height:1.15;letter-spacing:-.02em;margin:0 0 12px;font-weight:650;text-wrap:balance}
-.hero-in p.lead{color:var(--muted);margin:0 0 var(--s4);text-wrap:pretty}
-.drop{border:1.5px dashed var(--line);border-radius:var(--r-lg);padding:var(--s4) var(--s3);background:var(--card);transition:border-color .15s,background .15s}
+.lead{color:var(--muted);margin:0 0 var(--s4);text-wrap:pretty}
+.drop{border:2px dashed var(--line);border-radius:var(--r-lg);padding:var(--s4) var(--s3);background:var(--card);transition:border-color .15s,background .15s}
 .drop.over{border-color:var(--accent);background:var(--soft)}
-.drop .status{color:var(--muted);font-size:14px;margin-top:var(--s2);min-height:21px}
 .drop .big{font-weight:600;margin-bottom:14px}
-.drop .row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .or{color:var(--muted);font-size:13px;margin:18px 0 10px}
 .pathrow{display:flex;gap:8px}
+.status{color:var(--muted);font-size:14px;margin-top:var(--s2);min-height:21px}
+.manual{margin-top:var(--s3);font-size:14px}
 
 /* workspace */
-#work{padding-bottom:60px}
-.refs{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0 16px}
-.chip{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 6px 5px 6px;font-size:13px}
-.chip .strip{width:64px;height:18px;border-radius:999px}
-.chip .x{width:22px;height:22px;border-radius:50%;color:var(--muted);display:grid;place-items:center}
-.ico{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
-.chip .x:hover{background:var(--soft);color:var(--ink)}
-.add{font-size:13px}
-.search{display:flex;gap:8px}
-.strip{display:flex;overflow:hidden}
-.strip i{display:block;height:100%}
+#work{display:grid;grid-template-columns:340px 1fr;gap:var(--s3);align-items:start;padding-bottom:60px}
+@media (max-width:900px){#work{grid-template-columns:1fr}}
+aside{position:sticky;top:12px;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 24px);overflow:auto;padding-bottom:4px}
+@media (max-width:900px){aside{position:static;max-height:none}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--s2)}
+.card h2{font-size:14px;margin:0;font-weight:600}
+.head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+.sub{font-size:13px;color:var(--muted)}
 
-.bar{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;align-items:center;gap:16px;padding:14px 0;margin-top:12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.slider{display:flex;flex-direction:column;gap:4px;flex:1;min-width:260px;max-width:420px}
-.slider .top{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
-.slider .top b{color:var(--ink);font-weight:600}
-input[type=range]{width:100%;accent-color:var(--accent);height:24px;margin:0}
-.count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+/* palette editor */
+.bar{position:relative;display:flex;height:72px;border-radius:var(--r-sm);overflow:hidden;touch-action:none;user-select:none;background:var(--soft)}
+.bar .seg{height:100%;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;font-size:11px;font-weight:600;overflow:hidden;transition:width .12s}
+.bar.dragging .seg{transition:none}
+.bar .h{position:absolute;top:0;bottom:0;width:42px;margin-left:-21px;cursor:ew-resize;display:grid;place-items:center;touch-action:none;z-index:1}
+.bar .h:hover::after,.bar.dragging .h.on::after{width:8px;height:54px}
+.bar .h::after{content:"";width:6px;height:42px;border-radius:4px;transition:width .12s,height .12s;background:rgba(255,255,255,.9);box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.colors{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.crow{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:3px 8px;padding:5px 0;border-bottom:1px solid var(--line)}
+.crow:last-child{border-bottom:0}
+.crow .amt{grid-column:1/-1}
+.crow .pctwrap{display:flex;align-items:center;gap:3px;font-size:12px;color:var(--muted)}
+.sw{width:36px;height:36px;border-radius:50%;flex:none;position:relative;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);cursor:pointer}
+.sw input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;border:0;padding:0}
+.mini{border:1px solid var(--line);background:var(--bg);border-radius:var(--r-sm);padding:7px 8px;outline:none;font-size:14px}
+.hex{width:86px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+.pctn{width:66px;text-align:right}
+.foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+
+.refs{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:3px 3px 3px 6px}
+.chip .strip{width:54px;height:14px;border-radius:999px}
+.strip{display:flex;overflow:hidden}.strip i{display:block;height:100%}
+
+.lvl{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:4px}
+.lvl b{color:var(--ink);font-weight:600}
+.knob .lvl{margin-bottom:2px}
+.seg3{display:flex;background:var(--soft);border-radius:999px;padding:3px;margin-top:4px}
+.seg3 button{flex:1;padding:8px 0;border-radius:999px;font-size:14px;color:var(--muted)}
+.seg3 button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+
+/* results */
+.search{display:flex;gap:8px;position:relative;align-items:center}
+.gear{width:46px;height:46px;position:relative;border:1px solid var(--line);background:var(--card)}
+.gear .ico{width:20px;height:20px}
+.gear[aria-expanded=true]{color:var(--ink);border-color:var(--muted)}
+.pop{position:absolute;top:calc(100% + 8px);right:0;z-index:20;width:min(380px,calc(100vw - 32px));box-shadow:0 16px 48px rgba(0,0,0,.25);animation:in .18s var(--ease) both}
+.pop label{display:block;font-size:13px;font-weight:550;margin:13px 0 5px}
+.pop .hint{font-size:12px;color:var(--muted);margin-top:6px}
+.tools{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;margin-top:8px}
+.count{font-size:14px;color:var(--muted)}
 .count b{color:var(--ink)}
+.few{font-size:13px;color:var(--accent);display:flex;align-items:center;gap:6px;animation:in .25s var(--ease) both}
+.few button{color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:2px;padding:0}
 .actions{display:flex;gap:8px;margin-left:auto}
-.progress{height:2px;background:var(--line);position:relative;overflow:hidden;margin-top:-1px}
+.progress{height:2px;background:transparent;position:relative;overflow:hidden;margin-top:-1px}
 .progress i{position:absolute;inset:0 auto 0 0;background:var(--accent);transition:width .3s var(--ease)}
-
-.grid{columns:5 200px;column-gap:14px;margin-top:18px}
+.grid{columns:4 190px;column-gap:14px;margin-top:16px}
 .pin{break-inside:avoid;margin-bottom:14px;position:relative;cursor:pointer;border-radius:var(--r-md);overflow:hidden;background:var(--soft);animation:in .35s var(--ease) both}
 @keyframes in{from{opacity:0;transform:translateY(6px)}}
-.skel{height:var(--h);animation:pulse 1.2s ease-in-out infinite}
-@keyframes pulse{50%{opacity:.5}}
 .pin img{width:100%;display:block;min-height:120px}
 .pin .strip{height:6px}
-.pin::after{content:"";position:absolute;inset:0;border-radius:var(--r-md);box-shadow:inset 0 0 0 3px transparent;transition:box-shadow .12s}
+.pin::after{content:"";position:absolute;inset:0;border-radius:var(--r-md);box-shadow:inset 0 0 0 3px transparent;transition:box-shadow .12s;pointer-events:none}
 .pin.sel::after{box-shadow:inset 0 0 0 3px var(--accent)}
 .pin .chk{position:absolute;top:10px;left:10px;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.92);color:#18181b;display:grid;place-items:center;opacity:0;transform:scale(.8);transition:opacity .15s,transform .2s var(--ease)}
 .pin:hover .chk{opacity:1}
 .pin.sel .chk{opacity:1;transform:scale(1);background:var(--accent);color:var(--onAccent)}
 .pin a{position:absolute;top:10px;right:10px;padding:3px 9px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:12px;text-decoration:none;opacity:0;transition:opacity .12s}
 .pin:hover a{opacity:1}
+.skel{height:var(--h);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.5}}
 .empty{text-align:center;color:var(--muted);padding:80px 0}
 
-/* settings */
 dialog{border:0;border-radius:var(--r-lg);padding:0;background:var(--card);color:var(--ink);width:min(440px,calc(100vw - 32px));box-shadow:0 20px 60px rgba(0,0,0,.25)}
 dialog::backdrop{background:rgba(0,0,0,.35)}
 .dlg{padding:var(--s3)}
 .dlg h2{margin:0 0 18px;font-size:18px}
 .dlg label{display:block;font-size:13px;font-weight:550;margin:14px 0 6px}
 .dlg .help{font-size:12px;color:var(--muted);margin-top:6px}
-.dlg .foot{display:flex;justify-content:flex-end;gap:8px;margin-top:22px}
+.dlg .foot{justify-content:flex-end;gap:8px;margin-top:22px}
 code{font-size:12px;background:var(--soft);padding:1px 5px;border-radius:5px}
-
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s,transform .25s var(--ease);pointer-events:none;max-width:calc(100vw - 32px)}
 #toast.show{opacity:1;transform:translateX(-50%)}
 @media (max-width:600px){.hero-in h1{font-size:26px}.actions{margin-left:0;width:100%}.actions .btn{flex:1}}
+
+/* match bar: centred at the top of the results column, stays visible while scrolling */
+.matchbar{position:sticky;top:0;z-index:6;background:var(--bg);padding:8px 0 11px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.mrow{display:grid;grid-template-columns:auto minmax(160px,1fr) 70px auto;align-items:center;gap:14px;max-width:640px;margin:0 auto}
+.mrow input[type=range]{width:100%}
+.mlabel{font-weight:600}
+.mlevel{min-width:72px;font-weight:600}
+.finerow{display:grid;grid-template-columns:repeat(3,1fr);gap:19px;max-width:800px;margin:8px auto 0;animation:in .2s var(--ease) both}
+@media (max-width:900px){.finerow{grid-template-columns:1fr}}
+.knob .hint{font-size:12px;color:var(--muted)}
+/* settings card */
+.mini.wide{width:100%;padding:6px 8px}
+aside{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+aside::-webkit-scrollbar{width:6px}aside::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="logo"><span class="dots"><i style="background:#a0af8c"></i><i style="background:#decdaf"></i><i style="background:#c07a5a"></i></span>Pin Palette</div>
-    <button class="ghost" id="openSettings">Settings</button>
   </header>
 
   <section id="hero">
     <div class="hero-in">
       <h1>Find Pinterest images with your exact color palette</h1>
-      <p class="lead">Add one image or a folder. Pin Palette reads which colors it uses and how much of each, then finds pins that match.</p>
+      <p class="lead">Add one image or a folder. Pin Palette reads which colors it uses and how much of each, then finds pins that match. You can edit the palette before searching.</p>
       <div class="drop" id="drop">
         <div class="big">Drop images or a folder here</div>
         <div class="row">
@@ -117,110 +175,313 @@ code{font-size:12px;background:var(--soft);padding:1px 5px;border-radius:5px}
         <div class="pathrow"><input class="field" id="path" placeholder="C:\Users\you\Pictures  or  ~/Pictures/moodboard"><button class="btn sec" id="addPath">Add</button></div>
         <div class="status" id="dropStatus" aria-live="polite"></div>
       </div>
+      <button class="ghost manual" id="startManual">No image? Pick colors yourself</button>
     </div>
   </section>
 
   <section id="work" class="hidden">
-    <div class="refs" id="refs"></div>
-    <div class="search">
-      <input class="field" id="query" placeholder="What to search on Pinterest">
-      <button class="btn" id="go">Search</button>
-    </div>
-
-    <div id="results" class="hidden">
-      <div class="bar">
-        <div class="slider">
-          <div class="top"><span>Color match</span><b id="level"></b></div>
-          <input type="range" id="strict" min="0" max="100" value="55" aria-label="Color match strictness">
-        </div>
-        <div class="count" id="count"></div>
-        <div class="actions">
-          <button class="btn sec" id="selAll">Select all</button>
-          <button class="btn" id="dl">Download</button>
+    <aside>
+      <div class="card">
+        <div class="head"><h2>Palette</h2><span class="sub" id="palSub"></span></div>
+        <div class="bar" id="bar"></div>
+        <div class="colors" id="colors"></div>
+        <div class="foot">
+          <button class="ghost" id="addColor">+ Add color</button>
+          <button class="ghost" id="resetPal">Reset to images</button>
         </div>
       </div>
-      <div class="progress" id="prog"><i></i></div>
-      <div class="grid" id="grid"></div>
-      <div class="empty hidden" id="none">No matches at this strictness. Slide toward Loose.</div>
-    </div>
+
+      <div class="card">
+        <div class="head"><h2>Images</h2><button class="ghost" id="addMore">+ Add</button></div>
+        <div class="refs" id="refs"></div>
+      </div>
+    </aside>
+
+    <section>
+      <div class="matchbar">
+        <div class="mrow">
+          <span class="mlabel">Match</span>
+          <input type="range" id="strict" min="0" max="100" value="55" aria-label="Match strictness">
+          <b id="level" class="mlevel"></b>
+          <button class="ghost" id="fineBtn" aria-expanded="false">Fine-tune</button>
+        </div>
+        <div class="finerow hidden" id="fine">
+          <div class="knob">
+            <div class="lvl"><span>Color tolerance</span><b id="vE"></b></div>
+            <input type="range" id="kE" min="2" max="40" step="0.5" aria-label="Color tolerance">
+            <div class="hint">How far each color may drift.</div>
+          </div>
+          <div class="knob">
+            <div class="lvl"><span>Amount tolerance</span><b id="vP"></b></div>
+            <input type="range" id="kP" min="2" max="40" step="1" aria-label="Amount tolerance">
+            <div class="hint">How far each color's share may differ.</div>
+          </div>
+          <div class="knob">
+            <div class="lvl"><span>Number of colors</span></div>
+            <div class="seg3" id="kC"><button data-v="0">Same</button><button data-v="1">±1</button><button data-v="3">Any</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="search">
+        <input class="field" id="query" placeholder="What to search on Pinterest">
+        <button class="btn" id="go">Search</button>
+        <button class="iconbtn gear" id="setBtn" aria-label="Settings" aria-expanded="false" title="Settings">
+          <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        </button>
+        <div class="card pop hidden" id="settings" role="dialog" aria-label="Settings">
+          <div class="head"><h2>Settings</h2><span class="sub" id="sState"></span></div>
+          <label for="sMax">Pins to scan per search</label>
+          <input class="mini wide" id="sMax" type="number" min="25" max="1000" step="25">
+          <label for="sOut">Save downloads to</label>
+          <input class="mini wide" id="sOut" spellcheck="false">
+          <label for="sCookie">Pinterest login <span class="sub">(optional)</span></label>
+          <div class="pathrow"><input class="mini wide" id="sCookie" type="password" placeholder="Paste _pinterest_sess cookie"><button class="ghost hidden" id="logout">Log out</button></div>
+          <div class="hint">Logged-in searches return more pins. On pinterest.com press F12, open Application, then Cookies, and copy the value of <code>_pinterest_sess</code>. Stored only on this computer.</div>
+        </div>
+      </div>
+      <div class="sub" style="margin:8px 4px 0">Words come from your colors. Add a subject, like "bedroom" or "outfit", for tighter results.</div>
+      <div id="results" class="hidden">
+        <div class="tools">
+          <div class="count" id="count"></div>
+          <div class="few hidden" id="fewHint">Only a few matches. Try lowering Strictness. <button id="loosen">Loosen</button></div>
+          <div class="actions">
+            <button class="btn sec" id="selAll">Select all</button>
+            <button class="btn" id="dl">Download</button>
+          </div>
+        </div>
+        <div class="progress" id="prog"><i></i></div>
+        <div class="grid" id="grid"></div>
+        <div class="empty hidden" id="none">No pins match these settings. Lower the strictness or widen a tolerance.</div>
+      </div>
+    </section>
   </section>
 </div>
 
 <input type="file" id="files" accept="image/*" multiple hidden>
 <input type="file" id="folder" webkitdirectory multiple hidden>
 
-<dialog id="settings"><form class="dlg" method="dialog">
-  <h2>Settings</h2>
-  <label for="sMax">Pins to scan per search</label>
-  <input class="field" id="sMax" type="number" min="25" max="1000" step="25">
-  <label for="sOut">Save downloads to</label>
-  <input class="field" id="sOut">
-  <label for="sCookie">Pinterest login <span id="sState" style="color:var(--muted);font-weight:400"></span></label>
-  <input class="field" id="sCookie" type="password" placeholder="Paste _pinterest_sess cookie (optional)">
-  <div class="help">Optional. Logged-in searches return more pins. On pinterest.com press F12, open Application, then Cookies, and copy the value of <code>_pinterest_sess</code>. Stored only on this computer.</div>
-  <div class="foot"><button class="btn sec" value="cancel">Cancel</button><button class="btn" id="saveSettings" value="ok">Save</button></div>
-</form></dialog>
 
 <div id="toast"></div>
 
 <script>
 const $ = id => document.getElementById(id);
 const IMG = /\.(jpe?g|png|webp|bmp|gif)$/i;
-let S = {refs: [], job: null, settings: {}}, selected = new Set(), typed = false, timer, shown = [];
-
-const api = (u, body, headers) =>
-  fetch(u, {method: body === undefined ? "GET" : "POST", body, headers}).then(r => r.json());
-const strip = pal => `<span class="strip">${pal.map(p => `<i style="background:${p.hex};width:${p.pct}%"></i>`).join("")}</span>`;
 const ICON = {
   x: '<svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   check: '<svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
 };
-const esc = s => s.replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+let S = {refs: [], target: [], job: null, settings: {}};
+let T = [];             // local copy of the palette being edited: [{hex, pct}]
+let manual = false;     // user chose "pick colors yourself"
+let selected = new Set(), typed = false, timer, shown = [], pushTimer, editing = false;
+
+const api = (u, body, headers) =>
+  fetch(u, {method: body === undefined ? "GET" : "POST", body, headers}).then(r => r.json());
+const strip = pal => `<span class="strip">${pal.map(p => `<i style="background:${p.hex};width:${p.pct}%"></i>`).join("")}</span>`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("pp." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("pp." + k, JSON.stringify(v)); } catch {} },
+};
 function toast(msg, ms = 2600) {
   const t = $("toast"); t.textContent = msg; t.classList.add("show");
   clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), ms);
 }
-
-// Slider 0..100 -> limits. Strict = colors close (low delta-E) and color shares match.
-function limits() {
-  const s = $("strict").value / 100;
-  return {emd: 40 - 35 * s, pct: 40 - 36 * s, cx: s >= .7 ? 0 : s >= .35 ? 1 : 3};
-}
-function levelText() {
-  const v = +$("strict").value, L = limits();
-  const name = v >= 85 ? "Exact" : v >= 60 ? "Close" : v >= 30 ? "Similar" : "Loose";
-  return `${name} · shares within ${Math.round(L.pct)}%`;
+function textOn(hex) {  // readable label color on a swatch
+  const n = parseInt(hex.slice(1), 16), r = n >> 16, g = n >> 8 & 255, b = n & 255;
+  return (r * 299 + g * 587 + b * 114) / 1000 > 140 ? "rgba(0,0,0,.7)" : "rgba(255,255,255,.9)";
 }
 
-function render() {
-  const has = S.refs.length > 0;
-  $("hero").classList.toggle("hidden", has);
-  $("work").classList.toggle("hidden", !has);
-  if (!has) return;
+// ================= palette editing =================
+const MIN = 1;  // smallest share a color can have, in %
+const round1 = x => Math.round(x * 10) / 10;
 
-  $("refs").innerHTML = S.refs.map((r, i) =>
-    `<span class="chip" title="${esc(r.name)}">${strip(r.palette)}<button class="x" data-i="${i}" aria-label="Remove ${esc(r.name)}">${ICON.x}</button></span>`
-  ).join("") + `<button class="ghost add" id="addMore">+ Add more</button>`;
-  if (!typed) $("query").value = S.query;
+// Set color i to pct v; the other colors shrink or grow in proportion so the total stays 100.
+function setShare(i, v) {
+  const n = T.length;
+  if (n === 1) { T[0].pct = 100; return; }
+  v = Math.max(MIN, Math.min(100 - MIN * (n - 1), v));
+  const rest = 100 - v, others = T.reduce((s, c, j) => j === i ? s : s + c.pct, 0);
+  T.forEach((c, j) => { if (j !== i) c.pct = others > 0 ? Math.max(MIN, c.pct * rest / others) : rest / (n - 1); });
+  T[i].pct = v;
+  const fix = 100 - T.reduce((s, c) => s + c.pct, 0);  // absorb rounding drift in the largest other color
+  const k = T.reduce((b, c, j) => j !== i && c.pct > T[b].pct ? j : b, i === 0 ? 1 : 0);
+  T[k].pct += fix;
+  T.forEach(c => c.pct = round1(c.pct));
+}
+function removeColor(i) {
+  T.splice(i, 1);
+  const s = T.reduce((a, c) => a + c.pct, 0);
+  T.forEach(c => c.pct = round1(c.pct * 100 / s));
+  drawPalette(); push();
+}
+function addColor() {
+  const used = new Set(T.map(c => c.hex));
+  const pick = ["#a0af8c", "#decdaf", "#c07a5a", "#3b271d", "#f5f0e6", "#6b7f99", "#d9a5a0", "#2f3e2f"].find(h => !used.has(h)) || "#888888";
+  T.push({hex: pick, pct: T.length ? 0 : 100});
+  if (T.length > 1) setShare(T.length - 1, Math.round(100 / T.length));
+  drawPalette(); push();
+}
 
+// Build the bar's elements only when the number of colors changes; otherwise update them
+// in place, so a divider being dragged is never replaced mid-drag.
+function drawBar() {
+  const bar = $("bar"), segs = bar.querySelectorAll(".seg"), hs = bar.querySelectorAll(".h");
+  if (segs.length !== T.length || hs.length !== Math.max(0, T.length - 1)) {
+    bar.innerHTML = T.map(() => `<div class="seg"></div>`).join("") +
+      T.slice(1).map((_, i) => `<div class="h" data-i="${i}" title="Drag to change amounts"></div>`).join("");
+  }
+  let cum = 0;
+  bar.querySelectorAll(".seg").forEach((el, i) => {
+    const c = T[i];
+    el.style.width = c.pct + "%"; el.style.background = c.hex; el.style.color = textOn(c.hex);
+    el.textContent = c.pct >= 7 ? Math.round(c.pct) + "%" : "";
+  });
+  bar.querySelectorAll(".h").forEach((el, i) => { cum += T[i].pct; el.style.left = cum + "%"; });
+}
+// Paint the filled part of a slider track (WebKit has no built-in fill).
+function fill(el) { el.style.setProperty("--fill", (el.value - el.min) / (el.max - el.min) * 100 + "%"); }
+document.addEventListener("input", e => { if (e.target.type === "range") fill(e.target); });
+const fillAll = () => document.querySelectorAll("input[type=range]").forEach(fill);
+function drawRows() {
+  $("colors").innerHTML = T.map((c, i) => `
+    <div class="crow" data-i="${i}">
+      <label class="sw" style="background:${c.hex}" title="Change color"><input type="color" value="${c.hex}" data-k="color" aria-label="Color ${i + 1}"></label>
+      <input class="mini hex" value="${c.hex}" data-k="hex" spellcheck="false" aria-label="Hex code">
+      <span class="pctwrap"><input class="mini pctn" type="number" min="1" max="100" step="0.5" value="${c.pct}" data-k="pct" aria-label="Percent">%</span>
+      <button class="iconbtn" data-k="del" aria-label="Remove color" title="Remove color">${ICON.x}</button>
+      <input class="amt" type="range" min="1" max="100" step="0.5" value="${c.pct}" data-k="range" aria-label="Amount of this color">
+    </div>`).join("");
+  fillAll();
+}
+// Update values in place, so the input you are typing in keeps focus.
+function syncRows() {
+  [...$("colors").children].forEach((row, i) => {
+    const c = T[i]; if (!c) return;
+    row.querySelector(".sw").style.background = c.hex;
+    for (const el of row.querySelectorAll("input")) {
+      if (el === document.activeElement) continue;
+      if (el.dataset.k === "range" || el.dataset.k === "pct") { el.value = c.pct; if (el.type === "range") fill(el); }
+      if (el.dataset.k === "hex" || el.dataset.k === "color") el.value = c.hex;
+    }
+  });
+}
+function drawPalette() {
+  drawBar(); drawRows();
+  $("palSub").textContent = T.length ? `${T.length} color${T.length > 1 ? "s" : ""}` : "empty";
+  $("resetPal").classList.toggle("hidden", !(S.edited && S.refs.length));
+  $("go").disabled = !T.length;
+}
+function push() {  // send edits to the server (debounced); it re-scores results
+  editing = true;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(async () => {
+    const r = await api("/api/target", JSON.stringify({colors: T.map(c => ({hex: c.hex, pct: c.pct}))}));
+    editing = false;
+    if (r.error) return toast(r.error);
+    refresh();
+  }, 250);
+}
+
+$("colors").addEventListener("input", e => {
+  const row = e.target.closest(".crow"); if (!row) return;
+  const i = +row.dataset.i, k = e.target.dataset.k, v = e.target.value;
+  if (k === "range" || k === "pct") { if (v === "" || isNaN(+v)) return; setShare(i, +v); drawBar(); syncRows(); push(); }
+  if (k === "color") { T[i].hex = v; drawBar(); syncRows(); push(); }
+  if (k === "hex") {
+    const h = v.trim().replace(/^#?/, "#");
+    if (/^#[0-9a-f]{6}$/i.test(h)) { T[i].hex = h.toLowerCase(); drawBar(); syncRows(); push(); }
+  }
+});
+// When a text field is left, show the value actually in use (e.g. after an invalid hex or clamped %).
+$("colors").addEventListener("change", e => {
+  if (e.target.dataset.k === "hex" || e.target.dataset.k === "pct") { e.target.blur(); syncRows(); }
+});
+$("colors").addEventListener("click", e => {
+  const b = e.target.closest("[data-k=del]"); if (b) removeColor(+b.closest(".crow").dataset.i);
+});
+$("addColor").onclick = addColor;
+$("resetPal").onclick = async () => { await api("/api/target/reset", ""); T = []; refresh(true); };
+
+// Drag the dividers in the bar to move share between two neighbouring colors.
+$("bar").addEventListener("pointerdown", e => {
+  const h = e.target.closest(".h"); if (!h) return;
+  e.preventDefault();
+  const i = +h.dataset.i, bar = $("bar"), rect = bar.getBoundingClientRect();
+  const left = T.slice(0, i).reduce((s, c) => s + c.pct, 0), pair = T[i].pct + T[i + 1].pct;
+  bar.classList.add("dragging"); h.classList.add("on");
+  // Track on the window so the drag keeps going even when the pointer leaves the thin divider.
+  const move = ev => {
+    const x = (ev.clientX - rect.left) / rect.width * 100;
+    const a = Math.max(MIN, Math.min(pair - MIN, x - left));
+    T[i].pct = round1(a); T[i + 1].pct = round1(pair - a);
+    drawBar(); syncRows();
+  };
+  const up = () => {
+    bar.classList.remove("dragging"); h.classList.remove("on");
+    window.removeEventListener("pointermove", move);
+    window.removeEventListener("pointerup", up);
+    window.removeEventListener("pointercancel", up);
+    push();
+  };
+  window.addEventListener("pointermove", move);
+  window.addEventListener("pointerup", up);
+  window.addEventListener("pointercancel", up);
+});
+
+// ================= match settings =================
+let M = store.get("match", {preset: 55, emd: 20.75, pct: 20.2, cx: 1, custom: false});
+function fromPreset(v) {
+  const s = v / 100;
+  return {preset: v, emd: round1(40 - 35 * s), pct: Math.round(40 - 36 * s), cx: s >= .7 ? 0 : s >= .35 ? 1 : 3, custom: false};
+}
+function drawMatch() {
+  const v = M.preset;
+  $("strict").value = v;
+  $("level").textContent = M.custom ? "Custom" : v >= 85 ? "Exact" : v >= 60 ? "Close" : v >= 30 ? "Similar" : "Loose";
+  $("kE").value = M.emd; $("vE").textContent = M.emd <= 6 ? `${M.emd} · near-identical` : M.emd <= 15 ? `${M.emd} · close` : `${M.emd} · loose`;
+  $("kP").value = M.pct; $("vP").textContent = `±${M.pct}%`;
+  [...$("kC").children].forEach(b => b.classList.toggle("on", +b.dataset.v === M.cx));
+  ["strict", "kE", "kP"].forEach(id => fill($(id)));
+  store.set("match", M);
+}
+$("strict").oninput = e => { M = fromPreset(+e.target.value); drawMatch(); drawResults(); };
+$("fineBtn").onclick = () => {
+  const open = $("fine").classList.toggle("hidden") === false;
+  $("fineBtn").setAttribute("aria-expanded", open);
+  $("fineBtn").textContent = open ? "Hide fine-tune" : "Fine-tune";
+  fillAll();
+};
+// "Loosen": step strictness down one notch (also leaves Custom fine-tune settings).
+$("loosen").onclick = () => { M = fromPreset(Math.max(0, (M.custom ? Math.min(M.preset, 55) : M.preset) - 15)); drawMatch(); drawResults(); };
+$("kE").oninput = e => { M.emd = +e.target.value; M.custom = true; drawMatch(); drawResults(); };
+$("kP").oninput = e => { M.pct = +e.target.value; M.custom = true; drawMatch(); drawResults(); };
+$("kC").onclick = e => { const b = e.target.closest("button"); if (!b) return; M.cx = +b.dataset.v; M.custom = true; drawMatch(); drawResults(); };
+
+// ================= rendering =================
+function drawRefs() {
+  $("refs").innerHTML = S.refs.length
+    ? S.refs.map((r, i) => `<span class="chip" title="${esc(r.name)}">${strip(r.palette)}<button class="iconbtn" data-i="${i}" aria-label="Remove ${esc(r.name)}">${ICON.x}</button></span>`).join("")
+    : `<span class="sub">No images. The palette above is all yours.</span>`;
+}
+function drawResults() {
   const j = S.job;
   $("results").classList.toggle("hidden", !j);
   if (!j) return;
-  $("go").classList.toggle("busy", j.running);
   $("go").textContent = j.running ? "Stop" : "Search";
-  $("level").textContent = levelText();
-  const L = limits();
-  shown = j.results.filter(r => r.emd <= L.emd && r.pct_diff <= L.pct && r.cx_diff <= L.cx)
-                   .sort((a, b) => a.score - b.score);
+  shown = j.results.filter(r => r.emd <= M.emd && r.pct_diff <= M.pct && r.cx_diff <= M.cx).sort((a, b) => a.score - b.score);
   const nSel = shown.filter(r => selected.has(r.id)).length;
   $("count").innerHTML = `<b>${shown.length}</b> of ${j.done} match` + (j.running ? " · scanning…" : "");
-  $("dl").textContent = nSel ? `Download ${nSel}` : `Download all`;
+  // Few matches once enough pins are scanned: suggest loosening, with a one-click fix.
+  const few = shown.length < 10 && j.done >= 20 && (M.preset > 0 || M.custom);
+  $("fewHint").classList.toggle("hidden", !few);
+  $("dl").textContent = nSel ? `Download ${nSel}` : "Download all";
   $("dl").disabled = !shown.length;
-  $("selAll").textContent = nSel === shown.length && nSel ? "Clear" : "Select all";
-  $("prog").firstElementChild.style.width = j.running ? (j.found ? 100 * j.done / Math.max(j.found, 1) : 5) + "%" : "0";
+  $("selAll").textContent = nSel && nSel === shown.length ? "Clear" : "Select all";
+  $("prog").firstElementChild.style.width = j.running ? Math.max(5, 100 * j.done / Math.max(j.found, 1)) + "%" : "0";
   $("none").classList.toggle("hidden", shown.length > 0 || j.running);
 
-  // Reuse existing card nodes so images don't reload while the slider moves.
+  // Reuse card nodes so images don't reload while sliders move.
   const grid = $("grid"), have = new Map([...grid.children].map(n => [n.dataset.id, n]));
   const frag = document.createDocumentFragment();
   for (const r of shown) {
@@ -228,35 +489,45 @@ function render() {
     if (!n) {
       n = document.createElement("div");
       n.className = "pin"; n.dataset.id = r.id;
-      n.innerHTML = `<img src="${r.thumb}" loading="lazy" referrerpolicy="no-referrer" alt=""><span class="chk">${ICON.check}</span><a href="${r.link}" target="_blank" rel="noopener">Open</a>${strip(r.palette)}`;
+      n.innerHTML = `<img src="${esc(r.thumb)}" loading="lazy" referrerpolicy="no-referrer" alt=""><span class="chk">${ICON.check}</span><a href="${esc(r.link)}" target="_blank" rel="noopener">Open</a>${strip(r.palette)}`;
     }
     n.classList.toggle("sel", selected.has(r.id));
     frag.appendChild(n);
   }
-  // Loading state: placeholder tiles until the first matches arrive.
-  if (j.running && shown.length < 10)
-    for (let i = shown.length; i < 10; i++) {
+  if (j.running && shown.length < 8)
+    for (let i = shown.length; i < 8; i++) {
       const k = document.createElement("div");
-      k.className = "pin skel"; k.style.setProperty("--h", [220, 300, 260, 340, 240][i % 5] + "px");
+      k.className = "pin skel"; k.style.setProperty("--h", [220, 300, 260, 340][i % 4] + "px");
       frag.appendChild(k);
     }
   grid.replaceChildren(frag);
 }
-
-async function refresh() {
+function render(paletteFromServer) {
+  const has = S.refs.length > 0 || S.target.length > 0 || manual;
+  $("hero").classList.toggle("hidden", has);
+  $("work").classList.toggle("hidden", !has);
+  if (!has) return;
+  if (paletteFromServer && !editing) { T = S.target.map(c => ({hex: c.hex, pct: c.pct})); drawPalette(); }
+  else $("resetPal").classList.toggle("hidden", !(S.edited && S.refs.length));
+  drawRefs();
+  drawSettings();
+  if (!typed) $("query").value = S.query;
+  drawResults();
+}
+async function refresh(paletteFromServer = false) {
   S = await api("/api/state");
-  if (S.job && S.job.error) toast(S.job.error, 5000), S.job.error = null;
-  render();
+  if (S.job && S.job.error) toast(S.job.error, 5000);
+  render(paletteFromServer);
   clearTimeout(timer);
   if (S.job && S.job.running) timer = setTimeout(refresh, 700);
 }
 
-// ---- adding reference images ----
+// ================= adding images =================
 async function upload(files) {
   files = [...files].filter(f => f.type.startsWith("image/") || IMG.test(f.name));
   if (!files.length) return toast("No images found");
   let n = 0;
-  const say = m => { $("dropStatus").textContent = m; if (S.refs.length) toast(m, 1500); };
+  const say = m => { $("dropStatus").textContent = m; if (!$("hero").classList.contains("hidden")) return; toast(m, 1500); };
   say(`Reading colors 0 of ${files.length}`);
   const queue = files.slice(), work = async () => {
     while (queue.length) {
@@ -267,9 +538,9 @@ async function upload(files) {
   };
   await Promise.all([work(), work(), work(), work()]);
   $("dropStatus").textContent = "";
-  typed = false; refresh();
+  typed = false; refresh(true);
 }
-function readEntry(entry) {  // walk a dropped folder
+function readEntry(entry) {
   return new Promise(res => {
     if (entry.isFile) return entry.file(f => res([f]), () => res([]));
     const reader = entry.createReader(), all = [];
@@ -280,16 +551,16 @@ function readEntry(entry) {  // walk a dropped folder
     next();
   });
 }
-async function onDrop(e) {
+document.addEventListener("dragover", e => { e.preventDefault(); $("drop").classList.add("over"); });
+document.addEventListener("dragleave", e => { if (!e.relatedTarget) $("drop").classList.remove("over"); });
+document.addEventListener("drop", async e => {
   e.preventDefault(); $("drop").classList.remove("over");
   const items = [...(e.dataTransfer.items || [])].map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
   upload(items.length ? (await Promise.all(items.map(readEntry))).flat() : e.dataTransfer.files);
-}
-document.addEventListener("dragover", e => { e.preventDefault(); $("drop").classList.add("over"); });
-document.addEventListener("dragleave", e => { if (!e.relatedTarget) $("drop").classList.remove("over"); });
-document.addEventListener("drop", onDrop);
+});
 $("pickFiles").onclick = () => $("files").click();
 $("pickFolder").onclick = () => $("folder").click();
+$("addMore").onclick = () => $("files").click();
 $("files").onchange = e => { upload(e.target.files); e.target.value = ""; };
 $("folder").onchange = e => { upload(e.target.files); e.target.value = ""; };
 async function addPath() {
@@ -297,22 +568,24 @@ async function addPath() {
   const r = await api("/api/refs/path", JSON.stringify({path: $("path").value}));
   $("dropStatus").textContent = "";
   if (r.error) return toast(r.error);
-  typed = false; refresh();
+  typed = false; refresh(true);
 }
 $("addPath").onclick = addPath;
 $("path").onkeydown = e => e.key === "Enter" && addPath();
 $("refs").onclick = async e => {
-  if (e.target.id === "addMore") return $("files").click();
-  if (e.target.dataset.i !== undefined) {
-    await api("/api/refs/remove", JSON.stringify({index: +e.target.dataset.i}));
-    typed = false; refresh();
-  }
+  const b = e.target.closest("[data-i]"); if (!b) return;
+  await api("/api/refs/remove", JSON.stringify({index: +b.dataset.i}));
+  typed = false; refresh(true);
 };
+$("startManual").onclick = () => { manual = true; T = []; addColor(); render(false); };
 
-// ---- search, select, download ----
+// ================= search, select, download =================
 $("query").oninput = () => typed = true;
 async function search() {
   if (S.job && S.job.running) { await api("/api/stop", ""); return refresh(); }
+  clearTimeout(pushTimer);
+  if (editing) await api("/api/target", JSON.stringify({colors: T.map(c => ({hex: c.hex, pct: c.pct}))}));
+  editing = false;
   selected.clear(); $("grid").replaceChildren();
   const r = await api("/api/search", JSON.stringify({query: $("query").value.trim() || S.query}));
   if (r.error) return toast(r.error);
@@ -320,17 +593,16 @@ async function search() {
 }
 $("go").onclick = search;
 $("query").onkeydown = e => e.key === "Enter" && search();
-$("strict").oninput = render;
 $("grid").onclick = e => {
   if (e.target.tagName === "A") return;
   const c = e.target.closest(".pin"); if (!c || c.classList.contains("skel")) return;
   selected.has(c.dataset.id) ? selected.delete(c.dataset.id) : selected.add(c.dataset.id);
-  render();
+  drawResults();
 };
 $("selAll").onclick = () => {
-  const all = shown.every(r => selected.has(r.id));
+  const all = shown.length && shown.every(r => selected.has(r.id));
   shown.forEach(r => all ? selected.delete(r.id) : selected.add(r.id));
-  render();
+  drawResults();
 };
 $("dl").onclick = async () => {
   const pick = shown.filter(r => selected.has(r.id)), items = pick.length ? pick : shown;
@@ -342,19 +614,39 @@ $("dl").onclick = async () => {
   api("/api/open", "");
 };
 
-// ---- settings ----
-$("openSettings").onclick = () => {
-  const s = S.settings; $("sMax").value = s.max; $("sOut").value = s.outdir; $("sCookie").value = "";
-  $("sState").textContent = s.logged_in ? "· connected" : "· not connected";
-  $("settings").showModal();
-};
-$("saveSettings").onclick = () => {
-  const body = {max: $("sMax").value, outdir: $("sOut").value};
-  if ($("sCookie").value) body.cookie = $("sCookie").value;
-  api("/api/settings", JSON.stringify(body)).then(() => { toast("Saved"); refresh(); });
-};
+// ================= settings =================
+// Settings popover next to Search: opens on the gear, closes on outside click or Esc.
+function setPop(open) {
+  $("settings").classList.toggle("hidden", !open);
+  $("setBtn").setAttribute("aria-expanded", open);
+  if (open) drawSettings();
+}
+$("setBtn").onclick = e => { e.stopPropagation(); setPop($("settings").classList.contains("hidden")); };
+document.addEventListener("click", e => {
+  if (!$("settings").classList.contains("hidden") && !e.target.closest("#settings")) setPop(false);
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") setPop(false); });
+// Settings save as soon as a field is changed; no Save button.
+function drawSettings() {
+  const s = S.settings || {};
+  if (document.activeElement !== $("sMax")) $("sMax").value = s.max;
+  if (document.activeElement !== $("sOut")) $("sOut").value = s.outdir;
+  $("sState").textContent = s.logged_in ? "Logged in" : "";
+  $("sCookie").placeholder = s.logged_in ? "Logged in. Paste a new cookie to replace" : "Paste _pinterest_sess cookie";
+  $("logout").classList.toggle("hidden", !s.logged_in);
+}
+async function saveSetting(body, msg) {
+  const r = await api("/api/settings", JSON.stringify(body));
+  if (r.error) return toast(r.error);
+  toast(msg); refresh();
+}
+$("sMax").onchange = e => saveSetting({max: e.target.value}, "Saved");
+$("sOut").onchange = e => e.target.value.trim() && saveSetting({outdir: e.target.value.trim()}, "Saved");
+$("sCookie").onchange = e => { const v = e.target.value.trim(); e.target.value = ""; if (v) saveSetting({cookie: v}, "Logged in"); };
+$("logout").onclick = () => saveSetting({cookie: ""}, "Logged out");
 
-refresh();
+drawMatch();
+refresh(true);
 </script>
 </body>
 </html>

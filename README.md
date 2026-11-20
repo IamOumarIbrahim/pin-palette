@@ -26,10 +26,15 @@ Already downloaded the ZIP? Double-click `Start.bat` (Windows) or run `./start.s
 
 ## Use
 
-1. Drop an image or a folder onto the page.
-2. Press **Search**. The search words are filled in from your colors; add a subject like "bedroom" or "outfit" for tighter results.
-3. Move the **Color match** slider. Right is stricter: colors must be closer and each color's share must match more tightly.
-4. Click pins to select them, then **Download**. Files go to `Pictures/Pin Palette`.
+1. Drop an image or a folder onto the page, or choose **Pick colors yourself**.
+2. Edit the **Palette** if you like:
+   - drag the dividers in the color bar, or type a %, to change how much of each color you want
+   - click a swatch or type a hex code to change a color
+   - remove a color with ×, or add one with **+ Add color**
+   - **Reset to images** brings back the colors read from your images
+3. Press **Search**. The search words are filled in from your colors; add a subject like "bedroom" or "outfit" for tighter results.
+4. Set **Match** strictness. Right is stricter. Open **Fine-tune** to set color tolerance, amount tolerance and number of colors separately. Results update instantly, also when you edit the palette.
+5. Click pins to select them, then **Download**. Files go to `Pictures/Pin Palette`.
 
 ## Pinterest login (optional)
 
@@ -43,7 +48,15 @@ Each image is reduced to up to 8 colors in CIELAB space. Two palettes are compar
 - **Share mismatch**: the largest difference in how much of the image a color covers.
 - **Color count**: how many colors cover 5% or more.
 
-When you add several images, each pin is scored against its closest reference.
+When you add several images, their palettes are merged into one target palette, which you can edit.
+
+## Tests
+
+```sh
+python -m unittest discover -s tests
+```
+
+CI runs them on Windows, macOS and Linux with Python 3.9 and 3.13.
 
 ## Requirements
 

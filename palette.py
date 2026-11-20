@@ -4,6 +4,7 @@ A palette is a list of dicts: {"lab": [L, a, b], "hex": "#rrggbb", "pct": 0..100
 Color distance is CIE76 delta-E in Lab space (about 2.3 = just noticeable).
 """
 import io
+import re
 
 import numpy as np
 from PIL import Image
@@ -78,9 +79,12 @@ def extract(data, k=8):
     rgb = np.asarray(img, dtype=float).reshape(-1, 3)
     lab = _srgb_to_lab(rgb)
     centers, counts = _kmeans(lab, k)
+    return _finish([[c, float(n)] for c, n in zip(centers, counts) if n > 0])
 
-    # Merge near-duplicate clusters (weighted average).
-    clusters = [[c, n] for c, n in zip(centers, counts) if n > 0]
+
+def _finish(clusters, max_colors=None):
+    """clusters: [[lab ndarray, weight]]. Merge near-duplicates, drop tiny ones,
+    normalise to 100%, sort by share."""
     merged = True
     while merged and len(clusters) > 1:
         merged = False
@@ -97,12 +101,17 @@ def extract(data, k=8):
                 break
 
     total = sum(n for _, n in clusters)
+    clusters.sort(key=lambda cn: -cn[1])
+    if max_colors:
+        clusters = clusters[:max_colors]
     out = []
     for c, n in clusters:
         pct = 100.0 * n / total
         if pct < MIN_PCT:
             continue
         out.append({"lab": [round(float(v), 2) for v in c], "hex": _lab_to_hex(c), "pct": pct})
+    if not out:
+        return []
     # renormalise after dropping tiny clusters
     s = sum(p["pct"] for p in out)
     for p in out:
@@ -129,6 +138,45 @@ def _lab_to_hex(lab):
 
 def complexity(pal):
     return sum(1 for p in pal if p["pct"] >= SIGNIFICANT_PCT)
+
+
+def hex_to_lab(hex_color):
+    h = hex_color.strip().lstrip("#")
+    if len(h) == 3:
+        h = "".join(ch * 2 for ch in h)
+    if not re.fullmatch(r"[0-9a-fA-F]{6}", h):
+        raise ValueError("Bad color: %r" % hex_color)
+    rgb = np.array([[int(h[i:i + 2], 16) for i in (0, 2, 4)]], dtype=float)
+    return [round(float(v), 2) for v in _srgb_to_lab(rgb)[0]]
+
+
+def combine(palettes, max_colors=8):
+    """Merge several image palettes into one target palette (each image weighs the same)."""
+    palettes = [p for p in palettes if p]
+    if not palettes:
+        return []
+    clusters = [[np.array(c["lab"], dtype=float), c["pct"] / len(palettes)]
+                for pal in palettes for c in pal]
+    return _finish(clusters, max_colors)
+
+
+def normalize(colors):
+    """User-edited palette -> canonical palette.
+
+    colors: [{"hex": "#rrggbb", "pct": number}]. Shares are rescaled to total 100.
+    The user's own colors are kept exactly: no merging, nothing dropped except 0%.
+    """
+    out = []
+    for c in colors:
+        pct = float(c.get("pct", 0))
+        if pct <= 0:
+            continue
+        h = "#" + c["hex"].strip().lstrip("#").lower()
+        out.append({"lab": hex_to_lab(h), "hex": h, "pct": pct})
+    s = sum(c["pct"] for c in out)
+    for c in out:
+        c["pct"] = round(c["pct"] * 100.0 / s, 2)
+    return out
 
 
 def compare(ref, cand):
