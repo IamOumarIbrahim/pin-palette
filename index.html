@@ -164,7 +164,7 @@ aside::-webkit-scrollbar{width:6px}aside::-webkit-scrollbar-thumb{background:var
   <section id="hero">
     <div class="hero-in">
       <h1>Find Pinterest images with your exact color palette</h1>
-      <p class="lead">Add one image or a folder. Pin Palette reads which colors it uses and how much of each, then finds pins that match. You can edit the palette before searching.</p>
+      <p class="lead">Drop images, get matching pins.</p>
       <div class="drop" id="drop">
         <div class="big">Drop images or a folder here</div>
         <div class="row">
@@ -348,7 +348,7 @@ function drawRows() {
     <div class="crow" data-i="${i}">
       <label class="sw" style="background:${c.hex}" title="Change color"><input type="color" value="${c.hex}" data-k="color" aria-label="Color ${i + 1}"></label>
       <input class="mini hex" value="${c.hex}" data-k="hex" spellcheck="false" aria-label="Hex code">
-      <span class="pctwrap"><input class="mini pctn" type="number" min="1" max="100" step="0.5" value="${c.pct}" data-k="pct" aria-label="Percent">%</span>
+      <span class="pctwrap"><input class="mini pctn" type="number" min="1" max="100" step="0.5" value="${round1(c.pct)}" data-k="pct" aria-label="Percent">%</span>
       <button class="iconbtn" data-k="del" aria-label="Remove color" title="Remove color">${ICON.x}</button>
       <input class="amt" type="range" min="1" max="100" step="0.5" value="${c.pct}" data-k="range" aria-label="Amount of this color">
     </div>`).join("");
@@ -361,7 +361,7 @@ function syncRows() {
     row.querySelector(".sw").style.background = c.hex;
     for (const el of row.querySelectorAll("input")) {
       if (el === document.activeElement) continue;
-      if (el.dataset.k === "range" || el.dataset.k === "pct") { el.value = c.pct; if (el.type === "range") fill(el); }
+      if (el.dataset.k === "range" || el.dataset.k === "pct") { el.value = el.type === "range" ? c.pct : round1(c.pct); if (el.type === "range") fill(el); }
       if (el.dataset.k === "hex" || el.dataset.k === "color") el.value = c.hex;
     }
   });
