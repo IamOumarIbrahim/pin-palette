@@ -3,6 +3,7 @@
 [![tests](https://github.com/IamOumarIbrahim/pin-palette/actions/workflows/tests.yml/badge.svg)](https://github.com/IamOumarIbrahim/pin-palette/actions/workflows/tests.yml)
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)
 ![Windows | macOS | Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 **Find and download Pinterest images that match your color palette.** Drop in a photo, a moodboard or a whole folder. Pin Palette extracts its color palette, searches Pinterest, and shows only the pins with the same colors in the same proportions. Pick the ones you like and download them in full resolution.
 
@@ -75,3 +76,7 @@ CI runs them on Windows, macOS and Linux with Python 3.10 and 3.13.
 ## Requirements
 
 Python 3.10+, Pillow and NumPy. Runs locally at `http://127.0.0.1:8765`.
+
+## License
+
+[MIT](LICENSE)
