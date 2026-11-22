@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Pin Palette: find Pinterest images with a color palette similar to yours.
+"""Pin Palette: find Pinterest images with a color palette similar to yours,
+or images that look like a photo of yours (Similar image mode).
 
 Run:  python app.py [image-or-folder]
+      python app.py --similar [image]     (opens in Similar image mode)
 The browser opens automatically at http://127.0.0.1:8765
 """
 import json
@@ -18,6 +20,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 import palette
+import similar
 from pinterest import Pinterest
 
 HERE = Path(__file__).resolve().parent
@@ -36,6 +39,8 @@ state = {
     "job": None,
 }
 lock = threading.Lock()
+# Similar image mode: the source image and the current search.
+sim = {"name": None, "path": None, "img": None, "job": None}
 
 
 def score(cand, target):
@@ -142,6 +147,30 @@ def download(items, outdir):
     return {"saved": saved, "dir": str(out)}
 
 
+def sim_set_source(data, name, path=None):
+    similar.describe(data)  # validate: raises if it is not a readable image
+    if sim["job"]:
+        sim["job"].cancel = True
+    sim.update(name=name, path=path, img=data, job=None)
+
+
+def sim_outdir():
+    stem = os.path.splitext(sim["name"] or "image")[0]
+    if sim["path"]:
+        return str(Path(sim["path"]).parent / (stem + "_similar"))
+    return str(Path(os.path.expanduser(config["outdir"])) / (stem + "_similar"))
+
+
+def sim_rank(d):
+    job = sim["job"]
+    if not job or not job.src:
+        return []
+    with job.lock:
+        cands = list(job.cands)
+    return similar.rank(job.src, cands, similar.clean_rank(d.get("weights")), int(d.get("count", 10)),
+                        d.get("excluded", ()), d.get("included", ()))
+
+
 def open_folder(path):
     path = os.path.expanduser(path)
     os.makedirs(path, exist_ok=True)
@@ -166,6 +195,14 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _bytes(self, data, cache="no-store"):
+        self.send_response(200)
+        self.send_header("Content-Type", "application/octet-stream")
+        self.send_header("Cache-Control", cache)
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
     def _body(self):
         n = int(self.headers.get("Content-Length", 0))
         return self.rfile.read(n) if n else b""
@@ -180,6 +217,28 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
+        elif path == "/api/sim/state":
+            job = sim["job"]
+            src = None
+            if sim["img"] is not None:
+                src = {"name": sim["name"], "path": sim["path"]}
+                if job and job.src is not None and job.src.cls:
+                    src["kind"] = [similar.top_class(job.src.cls[k]) for k in similar.DIMS]
+            self._json({"source": src, "job": job.info() if job else None,
+                        "outdir": sim_outdir() if sim["img"] is not None else "",
+                        "model_errors": similar.Model.errors(),
+                        "defaults": {"search": similar.SEARCH_DEFAULTS, "rank": similar.RANK_DEFAULTS}})
+        elif path == "/api/sim/src":
+            if sim["img"] is None:
+                return self.send_error(404)
+            self._bytes(sim["img"])
+        elif path.startswith("/api/sim/img/"):
+            job = sim["job"]
+            try:
+                c = job.cands[int(path.rsplit("/", 1)[1])]
+            except (AttributeError, ValueError, IndexError):
+                return self.send_error(404)
+            self._bytes(c["data"], "max-age=3600")
         elif path == "/api/state":
             job = state["job"]
             with lock:
@@ -202,7 +261,13 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path = urlparse(self.path).path
+        # Only this app's own page may call the API: refuse requests from other websites.
+        origin = self.headers.get("Origin")
+        if origin and urlparse(origin).netloc != self.headers.get("Host"):
+            return self._json({"error": "forbidden"}, 403)
         try:
+            if path.startswith("/api/sim/"):
+                return self.sim_post(path)
             if path == "/api/refs/path":
                 refs = load_path(json.loads(self._body())["path"])
                 if not refs:
@@ -273,6 +338,46 @@ class Handler(BaseHTTPRequestHandler):
         self.send_error(404)
 
 
+    def sim_post(self, path):
+        if path == "/api/sim/source/upload":
+            name = unquote(self.headers.get("X-Filename", "image"))
+            sim_set_source(self._body(), name)
+            return self._json({"ok": True})
+        if path == "/api/sim/source/path":
+            p = Path(os.path.expanduser(json.loads(self._body())["path"].strip().strip('"').strip("'")))
+            if not p.is_file():
+                return self._json({"error": "No image at that path."}, 400)
+            sim_set_source(p.read_bytes(), p.name, str(p.resolve()))
+            return self._json({"ok": True})
+        if path == "/api/sim/search":
+            if sim["img"] is None:
+                return self._json({"error": "Choose an image first."}, 400)
+            if sim["job"]:
+                sim["job"].cancel = True
+            job = similar.Job(sim["img"], similar.clean_search(json.loads(self._body() or b"{}")))
+            sim["job"] = job
+            threading.Thread(target=job.run, daemon=True).start()
+            return self._json({"ok": True})
+        if path == "/api/sim/stop":
+            if sim["job"]:
+                sim["job"].cancel = True
+            return self._json({})
+        if path == "/api/sim/rank":
+            return self._json({"items": [i for _, i in sim_rank(json.loads(self._body()))]})
+        if path == "/api/sim/save":
+            d = json.loads(self._body())
+            items = [c for c, i in sim_rank(d) if i["status"] == "picked"]
+            if not items:
+                return self._json({"error": "Nothing to save."}, 400)
+            r = similar.save(items, d.get("outdir") or sim_outdir())
+            sim["saved"] = r["dir"]
+            return self._json(r)
+        if path == "/api/sim/open":
+            open_folder(sim.get("saved") or sim_outdir())
+            return self._json({})
+        self.send_error(404)
+
+
 def free_port(start):
     for port in range(start, start + 20):
         with socket.socket() as s:
@@ -282,13 +387,21 @@ def free_port(start):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        state["refs"] = load_path(sys.argv[1])
+    args = sys.argv[1:]
+    sim_mode = "--similar" in args
+    args = [a for a in args if a != "--similar"]
+    if args and sim_mode:
+        p = Path(os.path.expanduser(args[0]))
+        sim_set_source(p.read_bytes(), p.name, str(p.resolve()))
+        print("Similar image mode: " + p.name)
+    elif args:
+        state["refs"] = load_path(args[0])
         refs_changed()
         print("Loaded %d reference image(s)." % len(state["refs"]))
     port = free_port(int(os.environ.get("PORT", 8765)))
-    url = "http://127.0.0.1:%d" % port
+    url = "http://127.0.0.1:%d" % port + ("/#similar" if sim_mode else "")
     server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+    server.daemon_threads = True
     print("Pin Palette is running at " + url)
     print("Keep this window open. Press Ctrl+C to quit.")
     if not os.environ.get("NO_BROWSER"):

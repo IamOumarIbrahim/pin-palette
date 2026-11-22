@@ -57,7 +57,7 @@ input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 5px color-mix
 
 /* workspace */
 #work{display:grid;grid-template-columns:340px 1fr;gap:var(--s3);align-items:start;padding-bottom:60px}
-@media (max-width:900px){#work{grid-template-columns:1fr}}
+@media (max-width:900px){#work,#work2{grid-template-columns:1fr!important}}
 aside{position:sticky;top:12px;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 24px);overflow:auto;padding-bottom:4px}
 @media (max-width:900px){aside{position:static;max-height:none}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--s2)}
@@ -153,12 +153,60 @@ code{font-size:12px;background:var(--soft);padding:1px 5px;border-radius:5px}
 .mini.wide{width:100%;padding:6px 8px}
 aside{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 aside::-webkit-scrollbar{width:6px}aside::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+
+/* mode switch */
+.modes{display:flex;background:var(--soft);border-radius:999px;padding:3px}
+.modes button{padding:7px 16px;border-radius:999px;color:var(--muted);font-size:14px}
+.modes button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+
+/* similar image mode */
+details.card>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary h2::before{content:"\25B8";display:inline-block;width:14px;color:var(--muted);transition:transform .15s}
+details.card[open]>summary h2::before{transform:rotate(90deg)}
+details.card[open]>summary{margin-bottom:4px}
+.ctl{margin-top:12px}
+.ctl .hint{font-size:12px;color:var(--muted);margin-top:-2px}
+.ctl select.mini,.ctl textarea.mini,.ctl input.mini{width:100%}
+.ctl textarea.mini{min-height:64px;resize:vertical;font:inherit;font-size:14px}
+.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;color:var(--muted);cursor:pointer}
+.tg input{appearance:none;-webkit-appearance:none;width:40px;height:24px;border-radius:999px;background:var(--line);position:relative;flex:none;cursor:pointer;transition:background .15s}
+.tg input::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .18s var(--ease)}
+.tg input:checked{background:var(--accent)}
+.tg input:checked::after{transform:translateX(16px)}
+.tg input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.presets button{font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.presets button:hover{color:var(--ink);border-color:var(--muted)}
+.srcimg{width:100%;max-height:280px;object-fit:contain;border-radius:var(--r-sm);background:var(--soft);display:block}
+.srcmeta{font-size:13px;color:var(--muted);margin-top:8px;word-break:break-all}
+.srcmeta b{color:var(--ink);font-weight:600}
+.sbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.stage{font-size:14px;color:var(--muted)}
+.stage b{color:var(--ink)}
+.gchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.gchip{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted);animation:in .25s var(--ease) both}
+.outrow{display:flex;gap:6px;align-items:center;flex:1 1 260px;min-width:200px}
+.outrow .mini{flex:1;min-width:0;font-size:13px}
+.pin .rk{position:absolute;top:10px;left:10px;min-width:26px;height:26px;padding:0 7px;border-radius:999px;background:var(--accent);color:var(--onAccent);font-size:13px;font-weight:650;display:grid;place-items:center}
+.pin .st{position:absolute;top:10px;left:10px;padding:3px 9px;border-radius:999px;background:rgba(0,0,0,.6);color:#fff;font-size:12px}
+.pin .meta{position:absolute;left:0;right:0;bottom:0;padding:22px 10px 8px;background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;font-size:12px;line-height:1.45;opacity:0;transition:opacity .15s}
+.pin:hover .meta,.pin:focus-visible .meta{opacity:1}
+.pin.rest img{opacity:.45}
+.pin.out img{opacity:.22;filter:grayscale(1)}
+.pin.forced::after{box-shadow:inset 0 0 0 3px var(--accent)}
+.sgrid{columns:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;align-items:start}
+.sgrid .pin{margin:0}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="logo"><span class="dots"><i style="background:#a0af8c"></i><i style="background:#decdaf"></i><i style="background:#c07a5a"></i></span>Pin Palette</div>
+    <nav class="modes" aria-label="Mode">
+      <button data-m="palette">Palette</button>
+      <button data-m="similar">Similar image</button>
+    </nav>
   </header>
 
   <section id="hero">
@@ -255,9 +303,72 @@ aside::-webkit-scrollbar{width:6px}aside::-webkit-scrollbar-thumb{background:var
       </div>
     </section>
   </section>
+
+  <section id="sHero" class="hidden">
+    <div class="hero-in">
+      <h1>Find images that look like yours</h1>
+      <p class="lead">Same look, subject, pose, framing and colors. Pick how many, tune every setting, save them all.</p>
+      <div class="drop" id="sDrop">
+        <div class="big">Drop an image here</div>
+        <div class="row"><button class="btn" id="sPick">Choose image</button></div>
+        <div class="or">or paste a path</div>
+        <div class="pathrow"><input class="field" id="sPath" placeholder="~/Pictures/photo.jpg"><button class="btn sec" id="sAddPath">Use</button></div>
+        <div class="status" id="sDropStatus" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sWork" class="hidden">
+    <div id="work2" style="display:grid;grid-template-columns:340px 1fr;gap:var(--s3);align-items:start;padding-bottom:60px">
+    <aside>
+      <div class="card">
+        <div class="head"><h2>Your image</h2><button class="ghost" id="sChange">Change</button></div>
+        <img class="srcimg" id="sSrcImg" alt="Your image">
+        <div class="srcmeta" id="sSrcMeta"></div>
+      </div>
+      <details class="card" open>
+        <summary><h2>Ranking</h2><button class="ghost" id="sResetRank">Reset</button></summary>
+        <div class="sub">Changes apply instantly.</div>
+        <div class="presets" id="sPresets">
+          <button data-p="balanced">Balanced</button><button data-p="vibe">Same vibe</button>
+          <button data-p="colors">Same colors</button><button data-p="pose">Same pose</button>
+        </div>
+        <div id="sRank"></div>
+      </details>
+      <details class="card" open>
+        <summary><h2>Search</h2><button class="ghost" id="sResetSearch">Reset</button></summary>
+        <div class="sub">Applies to the next search.</div>
+        <div id="sSearch"></div>
+      </details>
+    </aside>
+    <section>
+      <div class="sbar">
+        <button class="btn" id="sGo">Search</button>
+        <div class="stage" id="sStage" aria-live="polite"></div>
+      </div>
+      <div class="gchips" id="sGuesses"></div>
+      <div id="sResults" class="hidden">
+        <div class="tools">
+          <div class="count" id="sCount"></div>
+          <div class="seg3" id="sShow" style="margin:0;min-width:170px"><button data-v="picked">Picked</button><button data-v="all">All</button></div>
+          <div class="outrow"><input class="mini" id="simOut" spellcheck="false" aria-label="Save to folder" title="Save to folder"></div>
+          <div class="actions">
+            <button class="btn sec" id="sOpen">Open folder</button>
+            <button class="btn" id="sSave">Save</button>
+          </div>
+        </div>
+        <div class="progress" id="sProg"><i></i></div>
+        <div class="sub" style="margin-top:8px" id="sHelp">Click an image to drop it; the next best takes its place. In <b>All</b>, click any image to force it in.</div>
+        <div class="grid sgrid" id="sGrid"></div>
+        <div class="empty hidden" id="sNone">No images pass these settings. Loosen a filter or search again.</div>
+      </div>
+    </section>
+    </div>
+  </section>
 </div>
 
 <input type="file" id="files" accept="image/*" multiple hidden>
+<input type="file" id="sFile" accept="image/*" hidden>
 <input type="file" id="folder" webkitdirectory multiple hidden>
 
 
@@ -503,6 +614,7 @@ function drawResults() {
   grid.replaceChildren(frag);
 }
 function render(paletteFromServer) {
+  if (MODE === "similar") return;
   const has = S.refs.length > 0 || S.target.length > 0 || manual;
   $("hero").classList.toggle("hidden", has);
   $("work").classList.toggle("hidden", !has);
@@ -551,10 +663,12 @@ function readEntry(entry) {
     next();
   });
 }
-document.addEventListener("dragover", e => { e.preventDefault(); $("drop").classList.add("over"); });
-document.addEventListener("dragleave", e => { if (!e.relatedTarget) $("drop").classList.remove("over"); });
+const dropZone = () => $(MODE === "similar" ? "sDrop" : "drop");
+document.addEventListener("dragover", e => { e.preventDefault(); dropZone().classList.add("over"); });
+document.addEventListener("dragleave", e => { if (!e.relatedTarget) dropZone().classList.remove("over"); });
 document.addEventListener("drop", async e => {
-  e.preventDefault(); $("drop").classList.remove("over");
+  e.preventDefault(); dropZone().classList.remove("over");
+  if (MODE === "similar") return simDrop(e);
   const items = [...(e.dataTransfer.items || [])].map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
   upload(items.length ? (await Promise.all(items.map(readEntry))).flat() : e.dataTransfer.files);
 });
@@ -645,8 +759,253 @@ $("sOut").onchange = e => e.target.value.trim() && saveSetting({outdir: e.target
 $("sCookie").onchange = e => { const v = e.target.value.trim(); e.target.value = ""; if (v) saveSetting({cookie: v}, "Logged in"); };
 $("logout").onclick = () => saveSetting({cookie: ""}, "Logged out");
 
+// ================= mode switch =================
+let MODE = location.hash === "#similar" ? "similar" : store.get("mode", "palette");
+function setMode(m) {
+  MODE = m; store.set("mode", m);
+  history.replaceState(null, "", m === "similar" ? "#similar" : location.pathname);
+  document.querySelectorAll(".modes button").forEach(b => b.classList.toggle("on", b.dataset.m === m));
+  document.title = m === "similar" ? "Similar image · Pin Palette" : "Pin Palette";
+  if (m === "similar") { $("hero").classList.add("hidden"); $("work").classList.add("hidden"); simRefresh(); }
+  else { $("sHero").classList.add("hidden"); $("sWork").classList.add("hidden"); render(true); }
+}
+document.querySelector(".modes").onclick = e => { const b = e.target.closest("button"); if (b) setMode(b.dataset.m); };
+
+// ================= similar image mode =================
+// Every setting. [key, label, type, ...]: range = min, max, step, unit/format, hint; select = options, hint.
+const SEARCH_SPEC = [
+  ["count", "Images to keep", "range", 1, 200, 1, "", "How many end up in the folder."],
+  ["pool", "Candidates per image", "range", 2, 30, 1, "×", "More = better picks, slower search."],
+  ["uploads", "Bing guesses", "range", 0, 8, 1, "", "Parallel uploads; each can guess a different caption."],
+  ["pages", "Max pages per search", "range", 1, 10, 1, "", "35 images per page."],
+  ["threads", "Parallel downloads", "range", 4, 128, 4, ""],
+  ["timeout", "Download time limit", "range", 3, 60, 1, " s", "Slow sites are skipped after this."],
+  ["wait", "Wait for Bing guesses", "range", 2, 30, 1, " s", "Slower guesses are often the most descriptive."],
+  ["min_kb", "Skip files under", "range", 0, 200, 1, " KB", "Drops thumbnails and junk."],
+  ["dino", "Use look model (DINOv2)", "toggle", "Judges lighting, pose and composition. 347 MB download the first time."],
+  ["clip", "Use content model (CLIP)", "toggle", "Understands subject and style; powers the photo / framing filters. 89 MB the first time."],
+  ["photo", "Photos only", "toggle", "Bing filter: no clipart or drawings."],
+  ["people", "People", "select", [["any", "Any"], ["faces", "Faces"], ["portrait", "Head & shoulders"]]],
+  ["size", "Image size", "select", [["any", "Any"], ["medium", "Medium+"], ["large", "Large"], ["wallpaper", "Wallpaper"]]],
+  ["aspect", "Shape", "select", [["any", "Any"], ["tall", "Tall"], ["wide", "Wide"], ["square", "Square"]]],
+  ["color", "Color", "select", [["any", "Any"], ["color", "Color only"], ["bw", "Black & white"]]],
+  ["safe", "SafeSearch", "select", [["strict", "Strict"], ["moderate", "Moderate"], ["off", "Off"]]],
+  ["guesses", "Use Bing's guesses", "toggle", "Bing describes your image and searches that."],
+  ["extra", "Add words to each guess", "text", "e.g. \"selfie\" or \"aesthetic\""],
+  ["queries", "Your own searches", "textarea", "One per line. Mixed into the pool and ranked by look."],
+];
+const RANK_SPEC = [
+  ["look", "Look", "range", 0, 1, 0.05, "", "Lighting, pose, composition (DINOv2)."],
+  ["clip", "Content", "range", 0, 1, 0.05, "", "Subject and style (CLIP)."],
+  ["color", "Colors", "range", 0, 1, 0.05, "", "Same palette and mood."],
+  ["layout", "Composition", "range", 0, 1, 0.05, "", "Where colors sit in the frame."],
+  ["style", "Same kind of picture", "range", 0, 6, 0.25, "", "Photo vs drawing vs shop listing. 0 = off."],
+  ["frame", "Same framing", "range", 0, 6, 0.25, "", "Close-up vs full body vs from behind. 0 = off."],
+  ["details", "Same details", "range", 0, 6, 0.25, "", "Hair color, glasses, dark vs bright light. 0 = off."],
+  ["dup_cos", "Near-duplicate cutoff", "range", 0.8, 1, 0.01, "", "Lower hides more lookalikes of the same shot. 1 = off."],
+  ["dup_bits", "Same-picture tolerance", "range", -1, 16, 1, "", "Higher catches more re-uploads. -1 = off."],
+  ["min_side", "Min image size", "range", 0, 2000, 50, " px", "Shortest side."],
+  ["orient", "Orientation", "select", [["any", "Any"], ["same", "Same as mine"], ["portrait", "Portrait"], ["landscape", "Landscape"], ["square", "Square"]]],
+  ["keep_source", "Allow copies of my image", "toggle"],
+];
+const PRESETS = {
+  balanced: {},
+  vibe: {look: 0.6, clip: 0.7, color: 0.4, layout: 0},
+  colors: {look: 0.3, clip: 0.2, color: 0.9, layout: 0.2},
+  pose: {look: 1, clip: 0.2, color: 0.1, layout: 0.2, frame: 4, details: 0.5},
+};
+const STATUS = {ok: "Not in top", dup: "Duplicate", source: "Your image", small: "Too small", orient: "Orientation", excluded: "Dropped"};
+let SD = null;                                  // server defaults
+let SS = store.get("sim.search", {}), SR = store.get("sim.rank", {});
+let simState = {}, simItems = [], simShow = store.get("sim.show", "picked");
+let excl = new Set(), incl = new Set(), simJobId = null, simTimer, rankTimer, outTyped = false;
+
+function ctlHTML(spec, vals, grp) {
+  return spec.map(([k, label, type, ...a]) => {
+    const v = vals[k], id = `c_${grp}_${k}`;
+    if (type === "range") {
+      const [mn, mx, st, unit, hint] = a;
+      return `<div class="ctl knob"><div class="lvl"><label for="${id}">${label}</label><b id="${id}_v"></b></div>
+        <input type="range" id="${id}" data-g="${grp}" data-k="${k}" min="${mn}" max="${mx}" step="${st}" value="${v}">
+        ${hint ? `<div class="hint">${hint}</div>` : ""}</div>`;
+    }
+    if (type === "toggle") return `<div class="ctl"><label class="tg">${label}<input type="checkbox" id="${id}" data-g="${grp}" data-k="${k}" ${v ? "checked" : ""}></label>${a[0] ? `<div class="hint">${a[0]}</div>` : ""}</div>`;
+    if (type === "select") return `<div class="ctl"><div class="lvl"><label for="${id}">${label}</label></div><select class="mini" id="${id}" data-g="${grp}" data-k="${k}">${a[0].map(([ov, ol]) => `<option value="${ov}" ${ov === v ? "selected" : ""}>${ol}</option>`).join("")}</select></div>`;
+    if (type === "text") return `<div class="ctl"><div class="lvl"><label for="${id}">${label}</label></div><input class="mini" id="${id}" data-g="${grp}" data-k="${k}" value="${esc(v)}" placeholder="${esc(a[0] || "")}"></div>`;
+    return `<div class="ctl"><div class="lvl"><label for="${id}">${label}</label></div><textarea class="mini" id="${id}" data-g="${grp}" data-k="${k}">${esc(v)}</textarea><div class="hint">${a[0] || ""}</div></div>`;
+  }).join("");
+}
+function fmt(spec, k, v) {
+  const s = spec.find(x => x[0] === k), unit = s[6] || "";
+  if (k === "dup_cos" && v >= 1) return "off";
+  if (k === "dup_bits" && v < 0) return "off";
+  if ((k === "style" || k === "frame" || k === "details") && v == 0) return "off";
+  if (k === "min_side" && v == 0) return "any";
+  return (unit === "×" ? "×" + v : v + unit);
+}
+function drawCtlValues() {
+  for (const [spec, vals, g] of [[SEARCH_SPEC, simSearch(), "s"], [RANK_SPEC, simRank(), "r"]])
+    for (const [k, , type] of spec) {
+      const el = $(`c_${g}_${k}`); if (!el) continue;
+      if (type === "range") { if (el !== document.activeElement) el.value = vals[k]; $(`c_${g}_${k}_v`).textContent = fmt(spec, k, vals[k]); fill(el); }
+      else if (type === "toggle") el.checked = !!vals[k];
+      else if (el !== document.activeElement) el.value = vals[k];
+    }
+}
+const simSearch = () => ({...SD.search, ...SS});
+const simRank = () => ({...SD.rank, ...SR});
+function buildCtls() {
+  $("sSearch").innerHTML = ctlHTML(SEARCH_SPEC, simSearch(), "s");
+  $("sRank").innerHTML = ctlHTML(RANK_SPEC, simRank(), "r");
+  drawCtlValues();
+}
+function onCtl(e) {
+  const el = e.target, k = el.dataset.k, g = el.dataset.g; if (!k) return;
+  const v = el.type === "checkbox" ? el.checked : el.type === "range" ? +el.value : el.value;
+  if (g === "s") { SS[k] = v; store.set("sim.search", SS); }
+  else { SR[k] = v; store.set("sim.rank", SR); queueRank(); }
+  drawCtlValues();
+}
+$("sSearch").addEventListener("input", onCtl); $("sRank").addEventListener("input", onCtl);
+$("sSearch").addEventListener("change", onCtl); $("sRank").addEventListener("change", onCtl);
+$("sResetRank").onclick = e => { e.preventDefault(); SR = {}; store.set("sim.rank", SR); drawCtlValues(); queueRank(); };
+$("sResetSearch").onclick = e => { e.preventDefault(); SS = {}; store.set("sim.search", SS); buildCtls(); };
+$("sPresets").onclick = e => {
+  const b = e.target.closest("[data-p]"); if (!b) return;
+  SR = {...PRESETS[b.dataset.p]}; store.set("sim.rank", SR); drawCtlValues(); queueRank();
+  toast(b.textContent);
+};
+
+// ---- source image ----
+async function simUpload(file) {
+  $("sDropStatus").textContent = "Reading…";
+  const r = await api("/api/sim/source/upload", file, {"X-Filename": encodeURIComponent(file.name)}).catch(() => ({error: "Upload failed"}));
+  $("sDropStatus").textContent = "";
+  if (r.error) return toast(r.error);
+  simNewSource();
+}
+async function simAddPath() {
+  const r = await api("/api/sim/source/path", JSON.stringify({path: $("sPath").value}));
+  if (r.error) return toast(r.error);
+  simNewSource();
+}
+function simNewSource() { excl.clear(); incl.clear(); simItems = []; outTyped = false; $("sGrid").replaceChildren(); simRefresh(); }
+function simDrop(e) {
+  const f = [...(e.dataTransfer.files || [])].find(f => f.type.startsWith("image/") || IMG.test(f.name));
+  f ? simUpload(f) : toast("Drop an image file");
+}
+$("sPick").onclick = $("sChange").onclick = () => $("sFile").click();
+$("sFile").onchange = e => { if (e.target.files[0]) simUpload(e.target.files[0]); e.target.value = ""; };
+$("sAddPath").onclick = simAddPath;
+$("sPath").onkeydown = e => e.key === "Enter" && simAddPath();
+
+// ---- search ----
+async function simSearchGo() {
+  const j = simState.job;
+  if (j && j.running) { await api("/api/sim/stop", ""); return simRefresh(); }
+  excl.clear(); incl.clear(); simItems = []; $("sGrid").replaceChildren();
+  const r = await api("/api/sim/search", JSON.stringify(simSearch()));
+  if (r.error) return toast(r.error);
+  simRefresh();
+}
+$("sGo").onclick = simSearchGo;
+
+// ---- state + ranking ----
+async function simRefresh() {
+  simState = await api("/api/sim/state");
+  if (!SD) { SD = simState.defaults; buildCtls(); }
+  simRender();
+  clearTimeout(simTimer);
+  const j = simState.job;
+  if (j && j.running) simTimer = setTimeout(simRefresh, 500);
+  if (j && (j.id !== simJobId || j.running || !simItems.length)) { simJobId = j.id; doRank(); }
+}
+function queueRank() { clearTimeout(rankTimer); rankTimer = setTimeout(doRank, 30); }
+async function doRank() {
+  if (!simState.job) return;
+  const r = await api("/api/sim/rank", JSON.stringify({weights: simRank(), count: simSearch().count, excluded: [...excl], included: [...incl]}));
+  simItems = r.items || [];
+  simDrawResults();
+}
+function simRender() {
+  if (MODE !== "similar") return;
+  const src = simState.source, j = simState.job;
+  $("sHero").classList.toggle("hidden", !!src);
+  $("sWork").classList.toggle("hidden", !src);
+  if (!src) return;
+  const u = "/api/sim/src?n=" + encodeURIComponent(src.name + (src.path || ""));
+  if ($("sSrcImg").dataset.u !== u) { $("sSrcImg").src = u; $("sSrcImg").dataset.u = u; }
+  $("sSrcMeta").innerHTML = `<b>${esc(src.name)}</b>` + (src.kind ? ` · ${src.kind.map(esc).join(", ")}` : "");
+  if (!outTyped && document.activeElement !== $("simOut")) $("simOut").value = simState.outdir;
+  $("sGo").textContent = j && j.running ? "Stop" : j ? "Search again" : "Search";
+  let st = "";
+  if (j) {
+    if (j.error) st = `<b>${esc(j.error)}</b>`;
+    else if (j.running) st = `${esc(j.stage)}` + (j.found ? ` · <b>${j.done}</b> of ${j.found}` : "") + ` · ${j.elapsed}s`;
+    else st = `Done in <b>${j.elapsed}s</b> · ${j.ok} images analysed` + (j.dino ? "" : " · look model off") + (j.clip ? "" : " · content model off");
+  } else st = "Press Search. Settings on the left.";
+  for (const [m, e] of Object.entries(simState.model_errors || {})) if (simSearch()[m]) st += ` · ${m.toUpperCase()} model unavailable (${esc(e)})`;
+  $("sStage").innerHTML = st;
+  $("sGuesses").innerHTML = j ? j.guesses.map(g => `<span class="gchip" title="Search used">${esc(g)}</span>`).join("") : "";
+  $("sProg").firstElementChild.style.width = j && j.running && j.found ? Math.max(4, 100 * j.done / j.found) + "%" : j && j.running ? "4%" : "0";
+  $("sResults").classList.toggle("hidden", !j);
+}
+function simDrawResults() {
+  const j = simState.job; if (!j) return;
+  const picked = simItems.filter(i => i.status === "picked");
+  const list = simShow === "all" ? simItems : picked;
+  $("sCount").innerHTML = `<b>${picked.length}</b> picked of ${simItems.length}`;
+  [...$("sShow").children].forEach(b => b.classList.toggle("on", b.dataset.v === simShow));
+  $("sSave").textContent = picked.length ? `Save ${picked.length}` : "Save";
+  $("sSave").disabled = !picked.length || j.running;
+  $("sNone").classList.toggle("hidden", list.length > 0 || j.running);
+  const grid = $("sGrid"), have = new Map([...grid.children].map(n => [n.dataset.k, n]));
+  const frag = document.createDocumentFragment();
+  let rank = 0;
+  for (const it of list) {
+    const key = j.id + ":" + it.id;
+    let n = have.get(key);
+    if (!n) {
+      n = document.createElement("div");
+      n.className = "pin"; n.dataset.k = key; n.dataset.id = it.id; n.tabIndex = 0;
+      n.innerHTML = `<img src="/api/sim/img/${it.id}?j=${j.id}" loading="lazy" alt=""><span class="badge"></span><a href="${esc(it.url)}" target="_blank" rel="noopener noreferrer">Open</a><div class="meta"></div>`;
+    }
+    const isP = it.status === "picked";
+    if (isP) rank++;
+    n.classList.toggle("rest", !isP && it.status !== "excluded");
+    n.classList.toggle("out", it.status === "excluded");
+    n.classList.toggle("forced", incl.has(it.id));
+    n.querySelector(".badge").outerHTML = isP ? `<span class="badge rk">${rank}</span>` : `<span class="badge st">${STATUS[it.status] || it.status}</span>`;
+    const pct = x => x == null ? "–" : Math.round(x * 100) + "%";
+    n.querySelector(".meta").innerHTML = (it.look != null ? `Look ${pct(it.look)} · ` : "") + (it.clip != null ? `Content ${pct(it.clip)} · ` : "") + `Colors ${pct(it.color)}<br>` +
+      (it.style ? [it.style, it.framing, ...(it.details || [])].map(esc).join(" · ") + " · " : "") + `${it.w}×${it.h}`;
+    frag.appendChild(n);
+  }
+  grid.replaceChildren(frag);
+}
+$("sShow").onclick = e => { const b = e.target.closest("button"); if (!b) return; simShow = b.dataset.v; store.set("sim.show", simShow); simDrawResults(); };
+$("sGrid").onclick = e => {
+  if (e.target.tagName === "A") return;
+  const c = e.target.closest(".pin"); if (!c) return;
+  const id = +c.dataset.id, it = simItems.find(i => i.id === id); if (!it) return;
+  if (it.status === "excluded") excl.delete(id);
+  else if (it.status === "picked") { if (incl.has(id)) incl.delete(id); else excl.add(id); }
+  else incl.add(id);
+  doRank();
+};
+$("simOut").oninput = () => outTyped = true;
+$("sSave").onclick = async () => {
+  $("sSave").disabled = true;
+  const r = await api("/api/sim/save", JSON.stringify({weights: simRank(), count: simSearch().count, excluded: [...excl], included: [...incl], outdir: $("simOut").value.trim()}));
+  $("sSave").disabled = false;
+  if (r.error) return toast(r.error);
+  toast(`Saved ${r.files.length} images to ${r.dir}`, 4000);
+};
+$("sOpen").onclick = () => api("/api/sim/open", "");
+
 drawMatch();
 refresh(true);
+setMode(MODE);
 </script>
 </body>
 </html>
