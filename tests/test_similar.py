@@ -185,7 +185,8 @@ class Server(unittest.TestCase):
         p = Path(self.tmp, "pic.jpg")
         p.write_bytes(photo(RED))
         self.call("/api/sim/source/path", {"path": str(p)})
-        self.assertEqual(self.call("/api/sim/state")[1]["outdir"], str(Path(self.tmp, "pic_similar")))
+        # the app resolves the path (macOS /private symlink, Windows short names)
+        self.assertEqual(self.call("/api/sim/state")[1]["outdir"], str(p.resolve().parent / "pic_similar"))
 
     def test_bad_inputs(self):
         self.assertEqual(self.call("/api/sim/source/upload", b"not an image")[0], 500)
