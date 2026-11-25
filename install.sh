@@ -34,11 +34,7 @@ echo "Installing dependencies"
 "$PY" -m venv .venv
 .venv/bin/python -m pip install -q --upgrade pip
 .venv/bin/python -m pip install -q -r requirements.txt
-chmod +x start.sh findsimilar
-
-# `findsimilar [image]` command: opens straight into Similar image mode.
-mkdir -p "$HOME/.local/bin"
-ln -sf "$DIR/findsimilar" "$HOME/.local/bin/findsimilar"
+chmod +x start.sh
 
 # App launcher.
 if [ "$(uname)" = "Darwin" ]; then
@@ -57,17 +53,7 @@ Exec=$DIR/start.sh
 Terminal=true
 Categories=Graphics;
 EOF
-  cat > "$A/findsimilar.desktop" <<EOF
-[Desktop Entry]
-Type=Application
-Name=Find Similar
-Comment=Find images that look like yours
-Exec=$DIR/findsimilar %f
-MimeType=image/jpeg;image/png;image/webp;image/gif;image/bmp;
-Terminal=true
-Categories=Graphics;
-EOF
-  echo "Added 'Pin Palette' and 'Find Similar' to your app menu."
+  echo "Added 'Pin Palette' to your app menu."
 fi
 
 echo "Done. Starting Pin Palette..."
