@@ -62,10 +62,9 @@ EOF
 Type=Application
 Name=Find Similar
 Comment=Find images that look like yours
-Exec="$DIR/findsimilar" %f
-Icon=image-x-generic
+Exec=$DIR/findsimilar %f
 MimeType=image/jpeg;image/png;image/webp;image/gif;image/bmp;
-Terminal=false
+Terminal=true
 Categories=Graphics;
 EOF
   echo "Added 'Pin Palette' and 'Find Similar' to your app menu."

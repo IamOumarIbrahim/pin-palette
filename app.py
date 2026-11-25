@@ -12,7 +12,6 @@ import re
 import socket
 import sys
 import threading
-import urllib.request
 import uuid
 import webbrowser
 from concurrent.futures import ThreadPoolExecutor
@@ -379,26 +378,6 @@ class Handler(BaseHTTPRequestHandler):
         self.send_error(404)
 
 
-def running_instance(port):
-    """URL of a Pin Palette already running on `port`, or None."""
-    url = "http://127.0.0.1:%d" % port
-    try:
-        with urllib.request.urlopen(url + "/api/sim/state", timeout=0.6) as r:
-            return url if "defaults" in json.loads(r.read()) else None
-    except Exception:
-        return None
-
-
-def hand_off(url, sim_mode, args):
-    """Reuse a running Pin Palette: pass the image to it and open the page."""
-    if args:
-        api = "/api/sim/source/path" if sim_mode else "/api/refs/path"
-        req = urllib.request.Request(url + api, data=json.dumps({"path": str(Path(args[0]).resolve())}).encode())
-        urllib.request.urlopen(req, timeout=10).read()
-    webbrowser.open(url + ("/#similar" if sim_mode else "/"))
-    print("Pin Palette is already running at " + url)
-
-
 def free_port(start):
     for port in range(start, start + 20):
         with socket.socket() as s:
@@ -411,10 +390,6 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     sim_mode = "--similar" in args
     args = [a for a in args if a != "--similar"]
-    existing = running_instance(int(os.environ.get("PORT", 8765)))
-    if existing and not os.environ.get("NO_BROWSER"):
-        hand_off(existing, sim_mode, args)
-        sys.exit(0)
     if args and sim_mode:
         p = Path(os.path.expanduser(args[0]))
         sim_set_source(p.read_bytes(), p.name, str(p.resolve()))
